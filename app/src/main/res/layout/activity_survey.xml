@@ -10,13 +10,4 @@
         android:paddingTop="16dp"
         android:text="@string/welcome_tv" />
 
-    <Button
-        android:id="@+id/startSurveyBtn"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/start_survey_btn"
-        android:textAllCaps="false"
-        android:textSize="20sp" />
-
 </FrameLayout>
