@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,6 +35,9 @@ class SurveyViewModel @Inject constructor(
     fun updateCurrentQuestionNumber(position: Int) = viewModelScope.launch {
         _currentQuestionNumberState.emit(position)
     }
+
+    val submittedQuestionsNumber = surveyUIState.map { it.count { it.answer.isNotEmpty() } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
 
     val isLastQuestionState = combine(
         _currentQuestionNumberState,

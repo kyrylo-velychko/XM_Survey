@@ -76,6 +76,12 @@ class SurveyActivity : AppCompatActivity() {
                 hideBannerIsSubmitSuccessful()
             }
         }
+
+        lifecycleScope.launch {
+            viewModel.submittedQuestionsNumber.collect {
+                updateSubmittedQuestionsCounter(it)
+            }
+        }
     }
 
     // region RecyclerView
@@ -130,6 +136,10 @@ class SurveyActivity : AppCompatActivity() {
 
     private fun onSubmitClicked(answer: AnswerItemApiModel) {
         viewModel.sendAnswer(answer)
+    }
+
+    private fun updateSubmittedQuestionsCounter(count: Int) {
+        binding.submittedQuestionsTV.text = getString(R.string.questions_submitted, count)
     }
 
     // region Success/Failure banner

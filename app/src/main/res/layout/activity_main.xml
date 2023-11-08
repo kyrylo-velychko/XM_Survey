@@ -8,7 +8,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:paddingTop="16dp"
-        android:text="@string/welcome_tv" />
+        android:text="@string/welcome" />
 
     <Button
         android:id="@+id/startSurveyBtn"
