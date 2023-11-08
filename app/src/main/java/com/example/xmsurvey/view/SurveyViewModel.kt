@@ -6,6 +6,7 @@ import com.example.xmsurvey.data.model.AnswerItemApiModel
 import com.example.xmsurvey.data.repository.SurveyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +26,8 @@ class SurveyViewModel @Inject constructor(
 
     val surveyUIState = MutableStateFlow<List<QuestionUIModel>>(emptyList())
 
+    val isSubmitSuccessfulFlow = MutableSharedFlow<Boolean>()
+
     private val _currentQuestionNumberState = MutableStateFlow(-1)
     val currentQuestionNumberState = _currentQuestionNumberState.asStateFlow()
 
@@ -39,6 +42,8 @@ class SurveyViewModel @Inject constructor(
         currentPosition + 1 == surveyUI.size && surveyUI.isNotEmpty()
     }
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    val lastNotSavedAnswerState = MutableStateFlow<AnswerItemApiModel?>(null)
 
     private fun getQuestions() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -71,8 +76,10 @@ class SurveyViewModel @Inject constructor(
 
                 if (response.isSuccessful) {
                     saveSubmittedAnswer(answer)
+                    isSubmitSuccessfulFlow.emit(true)
                 } else {
-                    val errorBody = response.errorBody()
+                    lastNotSavedAnswerState.emit(answer)
+                    isSubmitSuccessfulFlow.emit(false)
                 }
             } catch (e: Exception) {
             }

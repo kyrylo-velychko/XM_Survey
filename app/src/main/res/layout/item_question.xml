@@ -14,18 +14,18 @@
             android:id="@+id/questionTV"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             android:gravity="center"
             android:minHeight="60dp"
-            android:textSize="22sp" />
+            android:textSize="22sp"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/answerET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/answer_hint"
             android:layout_marginTop="20dp"
             android:gravity="center"
+            android:hint="@string/answer_hint"
             android:textSize="22sp" />
 
         <Button
@@ -34,9 +34,10 @@
             android:layout_height="60dp"
             android:layout_gravity="center"
             android:layout_marginTop="40dp"
-            android:textSize="18sp"
+            android:enabled="false"
             android:text="@string/submit"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:textSize="18sp" />
 
     </LinearLayout>
 

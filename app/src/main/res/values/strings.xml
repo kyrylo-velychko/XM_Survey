@@ -7,4 +7,7 @@
     <string name="already_submitted">Already submitted</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    <string name="retry">Retry</string>
+    <string name="success">Success</string>
+    <string name="failure">Failure!</string>
 </resources>

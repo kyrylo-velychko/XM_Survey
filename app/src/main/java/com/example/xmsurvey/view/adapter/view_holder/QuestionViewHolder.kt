@@ -1,5 +1,6 @@
 package com.example.xmsurvey.view.adapter.view_holder
 
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.example.xmsurvey.R
 import com.example.xmsurvey.data.model.AnswerItemApiModel
@@ -12,13 +13,18 @@ class QuestionViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
-        binding.submitBtn.setOnClickListener {
-            onSubmitClick(
-                AnswerItemApiModel(
-                    id = adapterPosition,
-                    answer = binding.answerET.text.toString()
+        binding.run {
+            submitBtn.setOnClickListener {
+                onSubmitClick(
+                    AnswerItemApiModel(
+                        id = adapterPosition,
+                        answer = binding.answerET.text.toString()
+                    )
                 )
-            )
+            }
+            answerET.doAfterTextChanged {
+                submitBtn.isEnabled = it?.isEmpty() != true
+            }
         }
     }
 
@@ -40,10 +46,7 @@ class QuestionViewHolder(
             }
         } else {
             answerET.isEnabled = true
-            submitBtn.run {
-                isEnabled = true
-                setText(R.string.submit)
-            }
+            submitBtn.setText(R.string.submit)
         }
     }
 }

@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL
@@ -15,6 +16,8 @@ import com.example.xmsurvey.data.model.AnswerItemApiModel
 import com.example.xmsurvey.databinding.ActivitySurveyBinding
 import com.example.xmsurvey.view.adapter.SurveyAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -23,6 +26,7 @@ class SurveyActivity : AppCompatActivity() {
 
     private val viewModel by viewModels<SurveyViewModel>()
 
+    // region Lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySurveyBinding.inflate(layoutInflater)
@@ -30,12 +34,31 @@ class SurveyActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        initListeners()
         initRecyclerView()
     }
 
     override fun onStart() {
         super.onStart()
 
+        initSubscriptions()
+    }
+
+    override fun onDestroy() {
+        binding.recyclerView.removeOnScrollListener(recyclerViewOnScrollListener)
+        super.onDestroy()
+    }
+    // endregion
+
+    private fun initListeners() = with(binding) {
+        retryBtn.setOnClickListener {
+            viewModel.lastNotSavedAnswerState.value?.let { lastNotSavedAnswer ->
+                viewModel.sendAnswer(lastNotSavedAnswer)
+            }
+        }
+    }
+
+    private fun initSubscriptions() {
         lifecycleScope.launch {
             viewModel.surveyUIState.collect(::updateUI)
         }
@@ -45,13 +68,17 @@ class SurveyActivity : AppCompatActivity() {
                 invalidateOptionsMenu()
             }
         }
+
+        lifecycleScope.launch {
+            viewModel.isSubmitSuccessfulFlow.collectLatest {
+                showBannerIsSubmitSuccessful(it)
+                delay(2000)
+                hideBannerIsSubmitSuccessful()
+            }
+        }
     }
 
-    override fun onDestroy() {
-        binding.recyclerView.removeOnScrollListener(recyclerViewOnScrollListener)
-        super.onDestroy()
-    }
-
+    // region RecyclerView
     private fun initRecyclerView() = with(binding.recyclerView) {
         adapter = SurveyAdapter(::onSubmitClicked)
         layoutManager = LinearLayoutManager(this@SurveyActivity, HORIZONTAL, false)
@@ -67,10 +94,17 @@ class SurveyActivity : AppCompatActivity() {
         }
     }
 
+    private fun scrollRecyclerViewToPosition(shift: Int) {
+        val newPosition = viewModel.currentQuestionNumberState.value + shift
+        binding.recyclerView.smoothScrollToPosition(newPosition)
+    }
+    // endregion
+
+    // region ActionBar menu
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.action_bar_menu, menu)
         menu?.findItem(R.id.buttonPrevious)?.isEnabled =
-            viewModel.currentQuestionNumberState.value != 0
+            viewModel.currentQuestionNumberState.value != 0 // TODO
         menu?.findItem(R.id.buttonNext)?.isEnabled = !viewModel.isLastQuestionState.value
         return super.onCreateOptionsMenu(menu)
     }
@@ -88,12 +122,7 @@ class SurveyActivity : AppCompatActivity() {
 
         else -> super.onOptionsItemSelected(item)
     }
-
-
-    private fun scrollRecyclerViewToPosition(shift: Int) {
-        val newPosition = viewModel.currentQuestionNumberState.value + shift
-        binding.recyclerView.smoothScrollToPosition(newPosition)
-    }
+    // endregion
 
     private fun updateUI(data: List<QuestionUIModel>) {
         (binding.recyclerView.adapter as SurveyAdapter).submitList(data)
@@ -102,4 +131,28 @@ class SurveyActivity : AppCompatActivity() {
     private fun onSubmitClicked(answer: AnswerItemApiModel) {
         viewModel.sendAnswer(answer)
     }
+
+    // region Success/Failure banner
+    private fun showBannerIsSubmitSuccessful(isSuccess: Boolean) = with(binding) {
+        bannerTV.isVisible = true
+        if (isSuccess) {
+            bannerTV.run {
+                setText(R.string.success)
+                setBackgroundColor(getColor(R.color.success))
+            }
+            retryBtn.isVisible = false
+        } else {
+            bannerTV.run {
+                setText(R.string.failure)
+                setBackgroundColor(getColor(R.color.failure))
+            }
+            retryBtn.isVisible = true
+        }
+    }
+
+    private fun hideBannerIsSubmitSuccessful() {
+        binding.bannerTV.isVisible = false
+        binding.retryBtn.isVisible = false
+    }
+    // endregion
 }

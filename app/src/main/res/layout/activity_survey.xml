@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/submittedQuestionsTV"
@@ -11,12 +11,43 @@
         android:layout_height="60dp"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
-        android:text="@string/welcome_tv" />
+        android:text="@string/welcome_tv"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:background="@color/cardview_light_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/submittedQuestionsTV"
         tools:listitem="@layout/item_question" />
-</LinearLayout>
+
+    <TextView
+        android:id="@+id/bannerTV"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="@color/success"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="24dp"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Success" />
+
+    <Button
+        android:id="@+id/retryBtn"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:text="@string/retry"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/bannerTV"
+        app:layout_constraintEnd_toEndOf="@id/bannerTV"
+        app:layout_constraintTop_toTopOf="@id/bannerTV" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
