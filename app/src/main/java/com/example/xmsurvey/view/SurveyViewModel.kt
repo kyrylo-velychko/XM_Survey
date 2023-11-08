@@ -2,6 +2,7 @@ package com.example.xmsurvey.view
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.xmsurvey.data.model.AnswerItemApiModel
 import com.example.xmsurvey.data.repository.SurveyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -60,6 +61,30 @@ class SurveyViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
             }
+        }
+    }
+
+    fun sendAnswer(answer: AnswerItemApiModel) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = surveyRepository.submitAnswer(answer)
+
+                if (response.isSuccessful) {
+                    saveSubmittedAnswer(answer)
+                } else {
+                    val errorBody = response.errorBody()
+                }
+            } catch (e: Exception) {
+            }
+        }
+    }
+
+    private suspend fun saveSubmittedAnswer(answer: AnswerItemApiModel) {
+        surveyUIState.value[answer.id].let { answeredQuestion ->
+            val updatedList = surveyUIState.value.toMutableList()
+            val updatedFirstQuestion = answeredQuestion.copy(answer = answer.answer)
+            updatedList[answer.id] = updatedFirstQuestion
+            surveyUIState.emit(updatedList)
         }
     }
 }

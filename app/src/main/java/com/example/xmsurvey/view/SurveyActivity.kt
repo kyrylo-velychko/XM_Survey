@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.xmsurvey.R
+import com.example.xmsurvey.data.model.AnswerItemApiModel
 import com.example.xmsurvey.databinding.ActivitySurveyBinding
+import com.example.xmsurvey.view.adapter.SurveyAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -51,7 +53,7 @@ class SurveyActivity : AppCompatActivity() {
     }
 
     private fun initRecyclerView() = with(binding.recyclerView) {
-        adapter = SurveyAdapter()
+        adapter = SurveyAdapter(::onSubmitClicked)
         layoutManager = LinearLayoutManager(this@SurveyActivity, HORIZONTAL, false)
         addOnScrollListener(recyclerViewOnScrollListener)
         PagerSnapHelper().apply { attachToRecyclerView(this@with) }
@@ -67,7 +69,8 @@ class SurveyActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.action_bar_menu, menu)
-        menu?.findItem(R.id.buttonPrevious)?.isEnabled = viewModel.currentQuestionNumberState.value != 0
+        menu?.findItem(R.id.buttonPrevious)?.isEnabled =
+            viewModel.currentQuestionNumberState.value != 0
         menu?.findItem(R.id.buttonNext)?.isEnabled = !viewModel.isLastQuestionState.value
         return super.onCreateOptionsMenu(menu)
     }
@@ -94,5 +97,9 @@ class SurveyActivity : AppCompatActivity() {
 
     private fun updateUI(data: List<QuestionUIModel>) {
         (binding.recyclerView.adapter as SurveyAdapter).submitList(data)
+    }
+
+    private fun onSubmitClicked(answer: AnswerItemApiModel) {
+        viewModel.sendAnswer(answer)
     }
 }
