@@ -2,4 +2,7 @@
     <string name="app_name">XM Survey</string>
     <string name="start_survey_btn">Start survey</string>
     <string name="welcome_tv">Welcome</string>
+    <string name="answer_hint">Type here for an answer…</string>
+    <string name="submit">Submit</string>
+    <string name="already_submitted">Already submitted</string>
 </resources>
