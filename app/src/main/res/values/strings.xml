@@ -5,4 +5,6 @@
     <string name="answer_hint">Type here for an answer…</string>
     <string name="submit">Submit</string>
     <string name="already_submitted">Already submitted</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
 </resources>
