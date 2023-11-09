@@ -76,8 +76,6 @@ class SurveyViewModel @Inject constructor(
                     } ?: emptyList()
 
                     surveyUIState.emit(questionsList)
-                } else {
-                    val errorBody = response.errorBody()
                 }
             } catch (e: Exception) {
             }

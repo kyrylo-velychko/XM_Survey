@@ -25,7 +25,8 @@
         <activity
             android:name=".view.SurveyActivity"
             android:parentActivityName=".view.MainActivity"
-            android:theme="@style/Theme.MyApplication"></activity>
+            android:theme="@style/Theme.MyApplication"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 
 </manifest>

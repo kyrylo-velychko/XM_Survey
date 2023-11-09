@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:minHeight="60dp"
+            android:minHeight="50dp"
             android:textSize="22sp"
             android:textStyle="bold" />
 
@@ -23,7 +23,7 @@
             android:id="@+id/answerET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:gravity="center"
             android:hint="@string/answer_hint"
             android:textSize="22sp" />
@@ -33,7 +33,7 @@
             android:layout_width="250dp"
             android:layout_height="60dp"
             android:layout_gravity="center"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="30dp"
             android:enabled="false"
             android:text="@string/submit"
             android:textAllCaps="false"
