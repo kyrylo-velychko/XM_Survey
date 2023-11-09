@@ -115,8 +115,7 @@ class SurveyActivity : AppCompatActivity() {
     // region ActionBar menu
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.action_bar_menu, menu)
-        menu?.findItem(R.id.buttonPrevious)?.isEnabled =
-            viewModel.currentQuestionNumberState.value != 0 // TODO
+        menu?.findItem(R.id.buttonPrevious)?.isEnabled = !viewModel.isFirstQuestionState.value
         menu?.findItem(R.id.buttonNext)?.isEnabled = !viewModel.isLastQuestionState.value
         return super.onCreateOptionsMenu(menu)
     }
