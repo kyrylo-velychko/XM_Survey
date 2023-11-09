@@ -36,6 +36,14 @@ class SurveyViewModel @Inject constructor(
         _currentQuestionNumberState.emit(position)
     }
 
+    val allQuestionsCounterState = combine(
+        _currentQuestionNumberState,
+        surveyUIState,
+    ) { currentPosition, surveyUI ->
+        currentPosition + 1 to surveyUI.size
+    }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0 to 0)
+
     val submittedQuestionsNumber = surveyUIState.map { it.count { it.answer.isNotEmpty() } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
 

@@ -70,6 +70,12 @@ class SurveyActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
+            viewModel.allQuestionsCounterState.collect {
+                updateAllQuestionsCounter(it.first, it.second)
+            }
+        }
+
+        lifecycleScope.launch {
             viewModel.isSubmitSuccessfulFlow.collectLatest {
                 showBannerIsSubmitSuccessful(it)
                 delay(2000)
@@ -138,9 +144,19 @@ class SurveyActivity : AppCompatActivity() {
         viewModel.sendAnswer(answer)
     }
 
+    // region Counters
+    private fun updateAllQuestionsCounter(currentQuestionNumber: Int, allQuestionsNumber: Int) {
+        supportActionBar?.title = if (allQuestionsNumber == 0) {
+            getString(R.string.loading)
+        } else {
+            getString(R.string.activity_title, currentQuestionNumber, allQuestionsNumber)
+        }
+    }
+
     private fun updateSubmittedQuestionsCounter(count: Int) {
         binding.submittedQuestionsTV.text = getString(R.string.questions_submitted, count)
     }
+    // endregion
 
     // region Success/Failure banner
     private fun showBannerIsSubmitSuccessful(isSuccess: Boolean) = with(binding) {
