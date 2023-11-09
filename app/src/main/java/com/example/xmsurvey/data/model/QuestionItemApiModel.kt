@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class QuestionItemApiModel(
     @SerializedName("id")
-    val id: Long,
+    val id: Int,
 
     @SerializedName("question")
     val question: String,

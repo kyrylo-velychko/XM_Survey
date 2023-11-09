@@ -1,6 +1,6 @@
 package com.example.xmsurvey.di
 
-import com.example.xmsurvey.data.api.RetrofitInterface
+import com.example.xmsurvey.data.api.ApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,6 +26,6 @@ object ApiNetworkModule {
 
     @Singleton
     @Provides
-    fun provideRetrofitInterface(retrofit: Retrofit) =
-        retrofit.create(RetrofitInterface::class.java)
+    fun provideApiService(retrofit: Retrofit) =
+        retrofit.create(ApiService::class.java)
 }

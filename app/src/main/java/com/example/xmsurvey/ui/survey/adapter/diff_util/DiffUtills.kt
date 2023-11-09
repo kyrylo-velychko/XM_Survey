@@ -1,7 +1,7 @@
-package com.example.xmsurvey.view.adapter.diff_util
+package com.example.xmsurvey.ui.survey.adapter.diff_util
 
 import androidx.recyclerview.widget.DiffUtil
-import com.example.xmsurvey.view.QuestionUIModel
+import com.example.xmsurvey.ui.survey.adapter.model.QuestionUIModel
 
 class DiffUtils : DiffUtil.ItemCallback<QuestionUIModel>() {
 

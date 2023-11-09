@@ -7,7 +7,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 
-interface RetrofitInterface {
+interface ApiService {
 
     @GET("/questions")
     suspend fun downloadQuestions(): Response<List<QuestionItemApiModel>>

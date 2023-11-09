@@ -1,14 +1,19 @@
-package com.example.xmsurvey.view
+package com.example.xmsurvey.ui.survey
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.xmsurvey.data.model.AnswerItemApiModel
-import com.example.xmsurvey.data.repository.SurveyRepository
+import com.example.xmsurvey.R
+import com.example.xmsurvey.base.Result
+import com.example.xmsurvey.domain.model.Answer
+import com.example.xmsurvey.domain.repository.SurveyRepository
+import com.example.xmsurvey.ui.survey.adapter.model.QuestionUIModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -27,8 +32,7 @@ class SurveyViewModel @Inject constructor(
 
     val surveyUIState = MutableStateFlow<List<QuestionUIModel>>(emptyList())
 
-    val isSubmitSuccessfulFlow = MutableSharedFlow<Boolean>()
-
+    // region current question & all questions counters
     private val _currentQuestionNumberState = MutableStateFlow(-1)
     val currentQuestionNumberState = _currentQuestionNumberState.asStateFlow()
 
@@ -57,49 +61,68 @@ class SurveyViewModel @Inject constructor(
         currentPosition + 1 == surveyUI.size && surveyUI.isNotEmpty()
     }
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    // endregion
 
-    val lastNotSavedAnswerState = MutableStateFlow<AnswerItemApiModel?>(null)
+    // region Toast
+    private val _toastFlow = MutableSharedFlow<Int>()
+    val toastFlow = _toastFlow.asSharedFlow()
 
+    private fun updateToastStringRes(@StringRes resId: Int) = viewModelScope.launch {
+        _toastFlow.emit(resId)
+    }
+    // endregion
+
+    // region Questions list
     private fun getQuestions() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = surveyRepository.downloadQuestions()
-
-                if (response.isSuccessful) {
-                    val questionsList = response.body()?.let {
-                        it.map {
-                            QuestionUIModel(
-                                question = it.question,
-                                answer = ""
-                            )
+                when (val result = surveyRepository.downloadQuestions()) {
+                    is Result.Success -> {
+                        val questionsList = result.let {
+                            it.data.map { question ->
+                                QuestionUIModel(
+                                    question = question.question,
+                                    answer = ""
+                                )
+                            }
                         }
-                    } ?: emptyList()
 
-                    surveyUIState.emit(questionsList)
+                        surveyUIState.emit(questionsList)
+                    }
+
+                    is Result.Error -> updateToastStringRes(R.string.msg_unable_to_get_questions)
                 }
             } catch (e: Exception) {
+                updateToastStringRes(R.string.msg_unable_to_get_questions)
             }
         }
     }
+    // endregion
 
-    fun sendAnswer(answer: AnswerItemApiModel) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val response = surveyRepository.submitAnswer(answer)
+    // region Submit
+    val isSubmitSuccessfulFlow = MutableSharedFlow<Boolean>()
 
-                if (response.isSuccessful) {
+    val lastNotSubmittedAnswerState = MutableStateFlow<Answer?>(null)
+
+    fun sendAnswer(answer: Answer) = viewModelScope.launch(Dispatchers.IO) {
+        try {
+            when (surveyRepository.submitAnswer(answer)) {
+                is Result.Success -> {
                     saveSubmittedAnswer(answer)
                     isSubmitSuccessfulFlow.emit(true)
-                } else {
-                    lastNotSavedAnswerState.emit(answer)
+                }
+
+                is Result.Error -> {
+                    lastNotSubmittedAnswerState.emit(answer)
                     isSubmitSuccessfulFlow.emit(false)
                 }
-            } catch (e: Exception) {
             }
+        } catch (e: Exception) {
+            updateToastStringRes(R.string.msg_unable_to_send_answer)
         }
     }
 
-    private suspend fun saveSubmittedAnswer(answer: AnswerItemApiModel) {
+    private suspend fun saveSubmittedAnswer(answer: Answer) {
         surveyUIState.value[answer.id].let { answeredQuestion ->
             val updatedList = surveyUIState.value.toMutableList()
             val updatedFirstQuestion = answeredQuestion.copy(answer = answer.answer)
@@ -107,4 +130,5 @@ class SurveyViewModel @Inject constructor(
             surveyUIState.emit(updatedList)
         }
     }
+    // endregion
 }

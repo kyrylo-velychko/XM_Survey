@@ -1,22 +1,22 @@
-package com.example.xmsurvey.view.adapter.view_holder
+package com.example.xmsurvey.ui.survey.adapter.view_holder
 
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.example.xmsurvey.R
-import com.example.xmsurvey.data.model.AnswerItemApiModel
 import com.example.xmsurvey.databinding.ItemQuestionBinding
-import com.example.xmsurvey.view.QuestionUIModel
+import com.example.xmsurvey.domain.model.Answer
+import com.example.xmsurvey.ui.survey.adapter.model.QuestionUIModel
 
 class QuestionViewHolder(
     private val binding: ItemQuestionBinding,
-    private val onSubmitClick: (AnswerItemApiModel) -> Unit,
+    private val onSubmitClick: (Answer) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
         binding.run {
             submitBtn.setOnClickListener {
                 onSubmitClick(
-                    AnswerItemApiModel(
+                    Answer(
                         id = adapterPosition,
                         answer = binding.answerET.text.toString()
                     )

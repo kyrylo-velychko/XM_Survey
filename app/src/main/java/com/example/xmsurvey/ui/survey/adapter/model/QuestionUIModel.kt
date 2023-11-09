@@ -1,4 +1,4 @@
-package com.example.xmsurvey.view
+package com.example.xmsurvey.ui.survey.adapter.model
 
 data class QuestionUIModel(
     val question: String,

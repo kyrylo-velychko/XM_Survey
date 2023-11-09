@@ -1,8 +1,9 @@
-package com.example.xmsurvey.view
+package com.example.xmsurvey.ui.survey
 
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -12,9 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.xmsurvey.R
-import com.example.xmsurvey.data.model.AnswerItemApiModel
 import com.example.xmsurvey.databinding.ActivitySurveyBinding
-import com.example.xmsurvey.view.adapter.SurveyAdapter
+import com.example.xmsurvey.domain.model.Answer
+import com.example.xmsurvey.ui.survey.adapter.SurveyAdapter
+import com.example.xmsurvey.ui.survey.adapter.model.QuestionUIModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -50,10 +52,11 @@ class SurveyActivity : AppCompatActivity() {
     }
     // endregion
 
+    // region Subscriptions and Listeners
     private fun initListeners() = with(binding) {
         retryBtn.setOnClickListener {
-            viewModel.lastNotSavedAnswerState.value?.let { lastNotSavedAnswer ->
-                viewModel.sendAnswer(lastNotSavedAnswer)
+            viewModel.lastNotSubmittedAnswerState.value?.let { lastNotSubmittedAnswer ->
+                viewModel.sendAnswer(lastNotSubmittedAnswer)
             }
         }
     }
@@ -88,7 +91,14 @@ class SurveyActivity : AppCompatActivity() {
                 updateSubmittedQuestionsCounter(it)
             }
         }
+
+        lifecycleScope.launch {
+            viewModel.toastFlow.collectLatest {
+                Toast.makeText(this@SurveyActivity, getString(it), Toast.LENGTH_SHORT).show()
+            }
+        }
     }
+    // endregion
 
     // region RecyclerView
     private fun initRecyclerView() = with(binding.recyclerView) {
@@ -139,7 +149,7 @@ class SurveyActivity : AppCompatActivity() {
         (binding.recyclerView.adapter as SurveyAdapter).submitList(data)
     }
 
-    private fun onSubmitClicked(answer: AnswerItemApiModel) {
+    private fun onSubmitClicked(answer: Answer) {
         viewModel.sendAnswer(answer)
     }
 

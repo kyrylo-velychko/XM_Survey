@@ -1,7 +1,7 @@
 package com.example.xmsurvey.di
 
-import com.example.xmsurvey.data.repository.SurveyRepository
-import com.example.xmsurvey.data.repository.SurveyRepositoryImpl
+import com.example.xmsurvey.domain.repository.SurveyRepository
+import com.example.xmsurvey.domain.repository.SurveyRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

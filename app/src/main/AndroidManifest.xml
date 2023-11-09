@@ -12,7 +12,7 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
         <activity
-            android:name=".view.MainActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MyApplication">
             <intent-filter>
@@ -23,8 +23,8 @@
         </activity>
 
         <activity
-            android:name=".view.SurveyActivity"
-            android:parentActivityName=".view.MainActivity"
+            android:name=".ui.survey.SurveyActivity"
+            android:parentActivityName=".ui.main.MainActivity"
             android:theme="@style/Theme.MyApplication"
             android:windowSoftInputMode="adjustPan" />
     </application>

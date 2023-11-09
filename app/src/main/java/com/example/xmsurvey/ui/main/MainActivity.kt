@@ -1,9 +1,10 @@
-package com.example.xmsurvey.view
+package com.example.xmsurvey.ui.main
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.xmsurvey.databinding.ActivityMainBinding
+import com.example.xmsurvey.ui.survey.SurveyActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

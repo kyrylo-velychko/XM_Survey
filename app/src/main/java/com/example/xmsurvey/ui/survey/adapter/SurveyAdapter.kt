@@ -1,16 +1,16 @@
-package com.example.xmsurvey.view.adapter
+package com.example.xmsurvey.ui.survey.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
-import com.example.xmsurvey.data.model.AnswerItemApiModel
 import com.example.xmsurvey.databinding.ItemQuestionBinding
-import com.example.xmsurvey.view.QuestionUIModel
-import com.example.xmsurvey.view.adapter.diff_util.DiffUtils
-import com.example.xmsurvey.view.adapter.view_holder.QuestionViewHolder
+import com.example.xmsurvey.domain.model.Answer
+import com.example.xmsurvey.ui.survey.adapter.diff_util.DiffUtils
+import com.example.xmsurvey.ui.survey.adapter.model.QuestionUIModel
+import com.example.xmsurvey.ui.survey.adapter.view_holder.QuestionViewHolder
 
 class SurveyAdapter(
-    private val onSubmitClick: (AnswerItemApiModel) -> Unit,
+    private val onSubmitClick: (Answer) -> Unit,
 ) : ListAdapter<QuestionUIModel, QuestionViewHolder>(DiffUtils()) {
 
     init {
