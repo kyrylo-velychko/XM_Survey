@@ -16,7 +16,7 @@ class DiffUtils : DiffUtil.ItemCallback<QuestionUIModel>() {
     ) = oldItem == newItem
 
     override fun getChangePayload(oldItem: QuestionUIModel, newItem: QuestionUIModel): Any =
-        AdapterPayloads.values().filter {
+        AdapterPayloads.entries.filter {
             when (it) {
                 AdapterPayloads.ANSWER -> oldItem.answer != newItem.answer
             }

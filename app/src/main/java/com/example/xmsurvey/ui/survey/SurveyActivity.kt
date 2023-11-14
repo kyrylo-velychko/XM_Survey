@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import com.example.xmsurvey.R
 import com.example.xmsurvey.databinding.ActivitySurveyBinding
 import com.example.xmsurvey.domain.model.Answer
@@ -109,10 +110,17 @@ class SurveyActivity : AppCompatActivity() {
     }
 
     private val recyclerViewOnScrollListener = object : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-            val currentPosition = layoutManager.findFirstVisibleItemPosition()
-            viewModel.updateCurrentQuestionNumber(currentPosition)
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            when (newState) {
+                SCROLL_STATE_IDLE -> {
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val currentPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
+                    // Skip transition state when `currentPosition = -1`. Let system animation to be finished.
+                    if (currentPosition != -1) {
+                        viewModel.updateCurrentQuestionNumber(currentPosition)
+                    }
+                }
+            }
         }
     }
 
@@ -125,8 +133,10 @@ class SurveyActivity : AppCompatActivity() {
     // region ActionBar menu
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.action_bar_menu, menu)
-        menu?.findItem(R.id.buttonPrevious)?.isEnabled = !viewModel.isFirstQuestionState.value
-        menu?.findItem(R.id.buttonNext)?.isEnabled = !viewModel.isLastQuestionState.value
+        if (viewModel.currentQuestionNumberState.value >= 0) {
+            menu?.findItem(R.id.buttonPrevious)?.isEnabled = !viewModel.isFirstQuestionState.value
+            menu?.findItem(R.id.buttonNext)?.isEnabled = !viewModel.isLastQuestionState.value
+        }
         return super.onCreateOptionsMenu(menu)
     }
 

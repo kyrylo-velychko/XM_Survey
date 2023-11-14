@@ -88,6 +88,7 @@ class SurveyViewModel @Inject constructor(
                         }
 
                         surveyUIState.emit(questionsList)
+                        updateCurrentQuestionNumber(0)
                     }
 
                     is Result.Error -> updateToastStringRes(R.string.msg_unable_to_get_questions)
