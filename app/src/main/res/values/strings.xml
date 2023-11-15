@@ -13,6 +13,7 @@
     <string name="success">Success</string>
     <string name="failure">Failure!</string>
     <string name="loading">Loading…</string>
-    <string name="msg_unable_to_get_questions">Unable to get question from the server</string>
-    <string name="msg_unable_to_send_answer">Unable to send answer to the server</string>
+    <string name="error">Error</string>
+    <string name="msg_something_went_wrong">Something went wrong. Try again.</string>
+    <string name="msg_unable_to_get_questions">Unable to get questions from the server</string>
 </resources>

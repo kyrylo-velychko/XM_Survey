@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +19,7 @@ import com.example.xmsurvey.databinding.ActivitySurveyBinding
 import com.example.xmsurvey.domain.model.Answer
 import com.example.xmsurvey.ui.survey.adapter.SurveyAdapter
 import com.example.xmsurvey.ui.survey.adapter.model.QuestionUIModel
+import com.example.xmsurvey.ui.survey.adapter.model.SurveyUIState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -92,12 +94,6 @@ class SurveyActivity : AppCompatActivity() {
                 updateSubmittedQuestionsCounter(it)
             }
         }
-
-        lifecycleScope.launch {
-            viewModel.toastFlow.collectLatest {
-                Toast.makeText(this@SurveyActivity, getString(it), Toast.LENGTH_SHORT).show()
-            }
-        }
     }
     // endregion
 
@@ -107,6 +103,10 @@ class SurveyActivity : AppCompatActivity() {
         layoutManager = LinearLayoutManager(this@SurveyActivity, HORIZONTAL, false)
         addOnScrollListener(recyclerViewOnScrollListener)
         PagerSnapHelper().apply { attachToRecyclerView(this@with) }
+    }
+
+    private fun onSubmitClicked(answer: Answer) {
+        viewModel.sendAnswer(answer)
     }
 
     private val recyclerViewOnScrollListener = object : RecyclerView.OnScrollListener() {
@@ -155,13 +155,33 @@ class SurveyActivity : AppCompatActivity() {
     }
     // endregion
 
-    private fun updateUI(data: List<QuestionUIModel>) {
+    // region update UI
+    private fun updateUI(state: SurveyUIState) {
+        when (state) {
+            is SurveyUIState.DisplaySurveyState -> updateSurveyRecyclerView(state.data)
+            is SurveyUIState.ErrorUnsuccessfulGetQuestionsState -> onUnsuccessfulGetQuestions()
+            is SurveyUIState.ErrorGenericState -> onGenericError()
+        }
+    }
+
+    private fun updateSurveyRecyclerView(data: List<QuestionUIModel>) {
         (binding.recyclerView.adapter as SurveyAdapter).submitList(data)
     }
 
-    private fun onSubmitClicked(answer: Answer) {
-        viewModel.sendAnswer(answer)
+    private fun onUnsuccessfulGetQuestions() {
+        supportActionBar?.title = getString(R.string.error)
+        showToast(R.string.msg_unable_to_get_questions)
     }
+
+    private fun onGenericError() {
+        supportActionBar?.title = getString(R.string.error)
+        showToast(R.string.msg_something_went_wrong)
+    }
+
+    private fun showToast(@StringRes resId: Int) {
+        Toast.makeText(this@SurveyActivity, getString(resId), Toast.LENGTH_SHORT).show()
+    }
+    // endregion
 
     // region Counters
     private fun updateAllQuestionsCounter(currentQuestionNumber: Int, allQuestionsNumber: Int) {
